@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200&family=Sansita+Swashed:wght@300&family=Smooch+Sans:wght@100;400&family=Work+Sans:wght@300&display=swap');
+
+
+.App {
+    min-height: 100vh;
+    display: flex;
+    background-image: url("https://en.idei.club/uploads/posts/2023-03/1679514203_en-idei-club-p-blue-background-texture-dizain-pinterest-17.jpg");
+    background-size: cover;
+    background-position: center;
+}
