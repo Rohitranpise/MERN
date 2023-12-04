@@ -7,6 +7,7 @@ const userSchema = new schema({
         required: true
     },
     email: {
+        unique: true,
         type: String,
         required: true
     },
@@ -16,7 +17,6 @@ const userSchema = new schema({
     },
     pic: {
         type: String,
-        required: true,
         default: "https://t4.ftcdn.net/jpg/03/49/49/79/360_F_349497933_Ly4im8BDmHLaLzgyKg2f2yZOvJjBtlw5.webp"
     },
 
