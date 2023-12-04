@@ -8,6 +8,7 @@ const PORT = process.env.PORT;
 const userRouter = require("./routes/user.routes")
 
 
+app.use(express.json())
 app.get("/", (req, res) => {
     res.send(`this is home`)
 });

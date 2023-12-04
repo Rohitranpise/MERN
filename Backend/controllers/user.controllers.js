@@ -1,4 +1,6 @@
 const User = require("../models/user.model")
+const generateToken = require("../db/generateToken")
+const bcrypt = require("bcryptjs")
 
 const registerUser = async (req, res) => {
     try {
@@ -15,11 +17,15 @@ const registerUser = async (req, res) => {
             throw new Error(`user already exists`)
         }
 
+        //hashing the password..
+
+        const hash = await bcrypt.hash(password, 12)
+
         const user = await User.create({
             name,
             email,
-            password,
-            pic
+            password: hash,
+            pic,
         })
 
         if (user) {
@@ -29,6 +35,7 @@ const registerUser = async (req, res) => {
                     name: user.email,
                     password: user.password,
                     pic: user.pic,
+                    token: generateToken(user._id)
                 })
         } else {
             res.status(400)
@@ -41,6 +48,33 @@ const registerUser = async (req, res) => {
 }
 
 
+
+//user SignIN
+
+const authUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email })
+        if (user) {
+            const passwordMatch = await bcrypt.compare(password, user.password)
+
+            if (passwordMatch) {
+                const token = generateToken(user._id)
+                res.status(200).json({ token: token, user: user });
+            } else {
+                res.status(401).json({ error: 'Invalid credentials' });
+            }
+        } else {
+            res.status(401).json({ error: 'Invalid credentials' });
+        }
+    } catch (error) {
+        res.status(500).send(`error doing signin`)
+    }
+}
+
+
 module.exports = {
     registerUser,
+    authUser,
 }
