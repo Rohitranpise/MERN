@@ -1,5 +1,7 @@
-import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Toast, VStack } from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
+import { useToast } from '@chakra-ui/react'
+import axios from "axios"
 
 const Signup = () => {
 
@@ -8,16 +10,60 @@ const Signup = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmpassword, setConfirmpassword] = useState('')
+    const [loading, setLoading] = useState(false)
     const [pic, setPic] = useState('')
+    const [selectedFile, setSelectedFile] = useState(null);
+    const toast = useToast();
 
     const handleClick = () => {
         setShow(!show)
     }
 
-    const postDetails = (pics) => { }
+    const postDetails = async (selectedFile) => {
+        setLoading(true)
+        if (selectedFile === undefined) {
+            toast({
+                title: 'please select an image',
+                description: "warning",
+                status: 'success',
+                duration: 5000,
+                position: 'bottom',
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (selectedFile.type === "image/jpeg" || selectedFile.type === "image/png") {
+            const data = new FormData()
+            data.append("file", selectedFile)
+            data.append("upload_preset", "ml_default")
+            data.append("cloud_name", "dzzyvnoke")
+            await axios.post("https://api.cloudinary.com/v1_1/dzzyvnoke/image/upload", data)
+                .then((res) => {
+                    console.log(res.data.url)
+                    return res;
+                })
+                .then(res => {
+                    setPic(res.data.url.toString())
+                    setLoading(false)
+                })
+                .catch(error => {
+                    console.log(error)
+                    setLoading(false)
+                })
+        } else {
+            toast({
+                title: 'please select an image',
+                description: "warning",
+                status: 'success',
+                duration: 5000,
+                position: 'bottom',
+                isClosable: true,
+            });
+        }
+    }
 
     const submitHandler = () => { }
-
     return (
         <VStack spacing='5px'>
             <FormControl id='first-name' isRequired>
@@ -68,6 +114,7 @@ const Signup = () => {
                 width="100%"
                 style={{ marginTop: "15" }}
                 onClick={submitHandler}
+                isLoading={loading}
             >
                 Sign up
             </Button>
