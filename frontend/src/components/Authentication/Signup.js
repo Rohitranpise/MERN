@@ -2,6 +2,7 @@ import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, T
 import React, { useEffect, useState } from 'react'
 import { useToast } from '@chakra-ui/react'
 import axios from "axios"
+import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
 
@@ -14,6 +15,7 @@ const Signup = () => {
     const [pic, setPic] = useState('')
     const [selectedFile, setSelectedFile] = useState(null);
     const toast = useToast();
+    const navigate = useNavigate()
 
     const handleClick = () => {
         setShow(!show)
@@ -63,7 +65,64 @@ const Signup = () => {
         }
     }
 
-    const submitHandler = () => { }
+    const submitHandler = async () => {
+        setLoading(true);
+        if (!name || !email || !password || !confirmpassword) {
+            toast({
+                title: 'please fill all the details',
+                status: 'warning',
+                duration: 5000,
+                position: 'bottom',
+                isClosable: true,
+            })
+            setLoading(false)
+            return;
+        }
+
+        if (password !== confirmpassword) {
+            toast({
+                title: 'Passwords do not match',
+                status: 'warning',
+                duration: 5000,
+                position: 'bottom',
+                isClosable: true,
+            })
+            return;
+        }
+        try {
+            const config = {
+                headers: {
+                    "Content-type": "application/json"
+                }
+            }
+            const { data } = await axios.post("http://localhost:2000/user",
+                { name, email, password, pic },
+                config
+            );
+            toast({
+                title: 'Registration successful',
+                status: 'success',
+                duration: 5000,
+                position: 'bottom',
+                isClosable: true,
+            })
+            localStorage.setItem('userInfo', JSON.stringify(data));
+            setLoading(false)
+            navigate("/chats")
+
+        } catch (error) {
+            toast({
+                title: 'Error Occured',
+                description: error.response.data.message,
+                status: 'error',
+                duration: 5000,
+                position: 'bottom',
+                isClosable: true,
+            })
+            setLoading(false)
+        }
+
+    }
     return (
         <VStack spacing='5px'>
             <FormControl id='first-name' isRequired>

@@ -3,6 +3,8 @@ require("./db/db.config")
 const express = require("express")
 const app = express();
 const PORT = process.env.PORT;
+const CORS = require("cors")
+
 
 //router
 const userRouter = require("./routes/user.routes")
@@ -13,6 +15,10 @@ app.get("/", (req, res) => {
     res.send(`this is home`)
 });
 
+//cors
+app.use(CORS())
+
+//routing
 app.use("/user", userRouter)
 
 app.listen(PORT, () => {
