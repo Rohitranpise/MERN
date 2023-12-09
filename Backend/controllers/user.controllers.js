@@ -73,8 +73,27 @@ const authUser = async (req, res) => {
     }
 }
 
+const getAllUsers = async (req, res) => {
+    try {
+        const keyward = req.query.search
+            ? {
+                $or: [
+                    { name: { $regex: req.query.search, $options: "i" } },
+                    { email: { $regex: req.query.search, $options: "i" } },
+                ]
+            } : {}
+        const users = await User.find(keyward).find({ _id: { $ne: req.user._id } })
+        res.status(200).send(users)
+        return;
+    } catch (error) {
+        res.status(500).send(`error getting users`)
+        return;
+    }
+}
+
 
 module.exports = {
     registerUser,
     authUser,
+    getAllUsers
 }
