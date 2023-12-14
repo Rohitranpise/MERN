@@ -8,9 +8,10 @@ import Sidedrawer from '../miscellaneous/Sidedrawer';
 const Chatpage = () => {
 
   const { user } = ChatState();
+  console.log(user)
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       {user && <Sidedrawer />}
       <Box
         display='flex'
