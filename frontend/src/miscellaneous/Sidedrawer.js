@@ -4,6 +4,9 @@ import React, { useState } from 'react'
 import { ChatState } from '../Context/Chatprovider'
 import ProfileModal from './ProfileModal'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import ChatLoading from './ChatLoading'
+
 
 const Sidedrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -21,7 +24,7 @@ const Sidedrawer = () => {
     navigate("/")
   }
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!search) {
       toast({
         title: "Enter something in search",
@@ -30,6 +33,30 @@ const Sidedrawer = () => {
         isClosable: true,
         position: "top-left"
       })
+      return;
+    }
+
+    try {
+      setLoading(true)
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      }
+
+      const { data } = await axios.get(`http://localhost:2000/user?search=${search}`, config)
+      setLoading(false)
+      setSearchResult(data)
+    } catch (error) {
+      toast({
+        title: "Error occured!",
+        description: 'failed to load the search results!',
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left"
+      })
+      return;
     }
   }
 
@@ -87,9 +114,15 @@ const Sidedrawer = () => {
               >
               </Input>
               <Button
-               onClick={handleSearch}
+                onClick={handleSearch}
               >Go</Button>
             </Box>
+            {loading ? (
+              <ChatLoading />
+            ) : (
+              <span>
+              </span>
+            )}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
