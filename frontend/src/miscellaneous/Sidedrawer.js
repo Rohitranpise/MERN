@@ -6,13 +6,15 @@ import ProfileModal from './ProfileModal'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import ChatLoading from './ChatLoading'
+import UserListItem from '../UserAvatar/UserListItem'
+import { Spinner } from '@chakra-ui/spinner'
 
 
 const Sidedrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const navigate = useNavigate();
   const toast = useToast()
-  const { user } = ChatState()
+  const { user, setSelectedChat, chats, setChats } = ChatState()
   const [search, setSearch] = useState("")
   const [searchResult, setSearchResult] = useState([])
   const [loading, setLoading] = useState(false)
@@ -52,6 +54,36 @@ const Sidedrawer = () => {
         title: "Error occured!",
         description: 'failed to load the search results!',
         status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left"
+      })
+      return;
+    }
+  }
+
+  const accessChat = async (userId) => {
+    try {
+      setLoading(true)
+
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`
+        }
+      }
+
+      const { data } = await axios.post(`http://localhost:2000/chats`, { userId }, config)
+      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats])
+
+      setSelectedChat(data)
+      setLoadingChat(false)
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error fetching the chat",
+        description: error.message,
+        status: "warning",
         duration: 5000,
         isClosable: true,
         position: "top-left"
@@ -117,12 +149,25 @@ const Sidedrawer = () => {
                 onClick={handleSearch}
               >Go</Button>
             </Box>
-            {loading ? (
-              <ChatLoading />
-            ) : (
-              <span>
-              </span>
-            )}
+            {
+              loading ? (
+                <ChatLoading />
+              ) : (
+                searchResult?.map((user) => {
+                  { console.log(user) }
+                  return (
+                    < UserListItem
+                      key={user._id}
+                      user={user}
+                      handleFunction={() =>
+                        accessChat(user._id)
+                      }
+                    />
+                  )
+                })
+              )
+            }
+            {loadingChat && <Spinner ml='auto' display='flex' />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
