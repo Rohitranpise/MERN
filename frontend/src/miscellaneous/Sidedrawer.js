@@ -121,7 +121,7 @@ const Sidedrawer = () => {
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-              <Avatar size='sm' cursor='pointer' name={user.user.name} src={user.user.pic} />
+              <Avatar size='sm' cursor='pointer' name={user.user?.name} src={user.user?.pic} />
             </MenuButton>
             <MenuList>
               <ProfileModal user={user}>

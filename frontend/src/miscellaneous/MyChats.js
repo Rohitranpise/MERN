@@ -5,12 +5,20 @@ import axios from 'axios'
 import { AddIcon } from '@chakra-ui/icons'
 import ChatLoading from './ChatLoading'
 import { getSender } from '../config/ChatLogic'
+import GroupChatModal from './GroupChatModal'
+import UserListItem from '../UserAvatar/UserListItem'
 
 const MyChats = () => {
 
   const [loggedUser, setLoaggedUser] = useState()
+  const [loading, setLoading] = useState(false)
+  const [searchResult, setSearchResult] = useState([])
   const { selectedChat, setSelectedChat, setChats, chats, user } = ChatState()
   const toast = useToast();
+
+  const handleGroup = async () => {
+
+  }
 
   const fetchChat = async () => {
     try {
@@ -60,13 +68,27 @@ const MyChats = () => {
         justifyContent='space-between'
         alignItems='center'
       >My Chats
-        <Button
-          display='flex'
-          fontSize={{ base: '17px', md: '10px', lg: '17px' }}
-          rightIcon={<AddIcon />}
-        >
-          New group Chat
-        </Button>
+        <GroupChatModal>
+          {loading ? (
+            <div>loading</div>
+          ) : (
+            searchResult?.slice(0, 4).map((user) => (
+              <UserListItem
+                key={user._id}
+                user={user}
+                handleFunction={() => handleGroup(user)}
+              />
+            ))
+          )}
+
+          <Button
+            display='flex'
+            fontSize={{ base: '17px', md: '10px', lg: '17px' }}
+            rightIcon={<AddIcon />}
+          >
+            New group Chat
+          </Button>
+        </GroupChatModal>
       </Box>
       <Box
         display='flex'

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ChatState } from '../Context/Chatprovider'
 import { Box } from '@chakra-ui/react';
 import ChatBox from '../miscellaneous/ChatBox';
@@ -8,7 +8,10 @@ import Sidedrawer from '../miscellaneous/Sidedrawer';
 const Chatpage = () => {
 
   const { user } = ChatState();
-  console.log(user)
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div style={{ width: '100%' }}>
