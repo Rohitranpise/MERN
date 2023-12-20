@@ -8,7 +8,7 @@ import { getSender } from '../config/ChatLogic'
 import GroupChatModal from './GroupChatModal'
 import UserListItem from '../UserAvatar/UserListItem'
 
-const MyChats = () => {
+const MyChats = ({ fetchAgain }) => {
 
   const [loggedUser, setLoaggedUser] = useState()
   const [loading, setLoading] = useState(false)
@@ -46,7 +46,7 @@ const MyChats = () => {
   useEffect(() => {
     setLoaggedUser(JSON.parse(localStorage.getItem("userInfo")))
     fetchChat()
-  }, [])
+  }, [fetchAgain])
   return (
     <Box
       display={{ base: selectedChat ? 'none' : "flex", md: 'flex' }}

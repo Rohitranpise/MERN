@@ -18,8 +18,6 @@ const GroupChatModal = ({ children }) => {
 
     const { user, chats, setChats } = ChatState();
 
-    console.log(user)
-
     //serach the users
     const handleSearch = async (query) => {
         setSearch(query)
@@ -65,8 +63,59 @@ const GroupChatModal = ({ children }) => {
 
     }
 
-    const handleSubmit = () => { }
-    const handleDelete = () => { }
+    const handleSubmit = async () => {
+        if (!selectedUsers || !groupChatName) {
+            toast({
+                title: "please fill all details",
+                description: `fill all details`,
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "top"
+            })
+            return;
+        }
+
+        try {
+            const config = {
+                headers: {
+                    "Content-type": "application/json",
+                    Authorization: `Bearer ${user.token}`
+                }
+            }
+
+            const { data } = await axios.post(`http://localhost:2000/chats/group`, {
+                name: groupChatName,
+                users: JSON.stringify(selectedUsers.map((u) => u._id))
+            },
+                config
+            )
+
+            setChats([data, ...chats])
+            onclose()
+            toast({
+                title: "New group chat created!",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom"
+            })
+        } catch (error) {
+            toast({
+                title: "failed to create the chat",
+                description: `failed`,
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "top"
+            })
+        }
+    }
+
+
+    const handleDelete = (delUser) => {
+        setSelectedUsers(selectedUsers.filter((sel) => sel._id !== delUser._id))
+    }
 
 
     return (
@@ -111,11 +160,11 @@ const GroupChatModal = ({ children }) => {
                         {loading ? (
                             <div>loading</div>
                         ) : (
-                            searchResult?.slice(0, 4).map((user) => (
+                            searchResult?.slice(0, 4).map((u) => (
                                 <UserListItem
-                                    key={user._id}
-                                    user={user}
-                                    handleFunction={() => handleGroup(user)}
+                                    key={u._id}
+                                    user={u}
+                                    handleFunction={() => handleGroup(u)}
                                 />
                             ))
                         )}

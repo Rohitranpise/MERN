@@ -4,6 +4,7 @@ import React from 'react'
 
 const ProfileModal = ({ user, children }) => {
 
+    console.log(user)
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
@@ -20,7 +21,8 @@ const ProfileModal = ({ user, children }) => {
                         fontFamily='Work sans'
                         display='flex'
                         justifyContent='center'
-                    >{user.user.name}
+                    >
+                        {user.name || user.user.name}
                     </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody
@@ -32,11 +34,11 @@ const ProfileModal = ({ user, children }) => {
                         <Image
                             borderRadius='full'
                             boxSize='150px'
-                            src={user.user.pic}
-                            alt={user.user.name}
+                            src={user.pic || user.user.pic}
+                            alt={user.name || user.user.name}
                         />
                         <Text fontSize={{ base: '28px', md: "30px" }} fontFamily='Work sans'>
-                            {user.user.email}
+                            {user.email || user.user.email}
                         </Text>
                     </ModalBody>
 
