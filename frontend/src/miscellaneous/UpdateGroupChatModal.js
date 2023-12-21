@@ -3,6 +3,7 @@ import { Box, Button, FormControl, IconButton, Input, Modal, ModalBody, ModalClo
 import React, { useState } from 'react'
 import { ChatState } from '../Context/Chatprovider'
 import UserbadgeItem from '../UserAvatar/UserbadgeItem'
+import axios from 'axios'
 
 const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -19,7 +20,41 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
 
     const handleRemove = () => { }
 
-    const handleRename = () => { }
+    const handleRename = async () => {
+        if (!groupChatName) return
+
+        try {
+            setRenameLoading(true)
+
+            const config = {
+                headers: {
+                    "Content-type": "application/json",
+                    Authorization: `Bearer ${user.token}`
+                }
+            }
+
+            const { data } = await axios.post(`http://localhost:2000/chats/rename`, {
+                chatId: selectedChat._id,
+                chatName: groupChatName
+            }, config)
+            setSelectedChat(data)
+            console.log('error')
+            setFetchAgain(!fetchAgain)
+            setRenameLoading(false)
+        } catch (error) {
+            toast({
+                title: "Error fetching the chat",
+                description: `failed to load the chats`,
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "top-left"
+            });
+            setRenameLoading(false);
+        }
+
+        setGroupChatName("")
+    }
 
     const handleSearch = () => { }
 
